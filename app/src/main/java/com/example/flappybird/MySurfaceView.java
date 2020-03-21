@@ -7,16 +7,14 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
-import android.util.Log;
+
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-
 import java.util.Random;
 
 public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback, View.OnTouchListener {
@@ -27,14 +25,16 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
     TopTube topTubeThread;
     BottomTube bottomTubeThread;
     SurfaceHolder surfaceHolder;
-    Point pointBird,pointTop,pointBottom;
+    Point pointBird;
+    Point[]pointTop = new Point[4];
+    Point[]pointBottom =new Point[4];
     Rect rect;
     int index;
-    int velocity=0,gravity = 3, forward = 10;
+    int velocity=0,gravity = 3,distance;
     final int GAP = 400;
     RectF birdRect,topRect,bottomRect;
     Random rnd;
-    int distance = 100;//distance between the tubes
+
     public MySurfaceView(Context context) {
         super(context);
         dwidth = Resources.getSystem().getDisplayMetrics().widthPixels;//this way, bird will always be in the center of any device
@@ -59,19 +59,24 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
         setOnTouchListener(this);
         birdRect = new RectF(pointBird.x,pointBird.y,pointBird.x+birdThread.getBwidth(),pointBird.y+birdThread.getBheight());
         rnd = new Random();
-        //draw top tube
-        pointTop = new Point();
-        pointTop.x = dwidth-topTubeThread.gettWidth();
-        pointTop.y = -rnd.nextInt(topTubeThread.gettHeight());
-        //draw bottom tube
-        pointBottom = new Point();
-        pointBottom.x = pointTop.x;
-        pointBottom.y = dHeight - GAP + pointTop.y;
-        do{
-            pointTop.y = -rnd.nextInt(topTubeThread.gettHeight());
-            pointBottom.y = dHeight - GAP + pointTop.y;}
-        while(pointBottom.y<dHeight-bottomTubeThread.getbHeight());//make sure the bottom tube won't be drawn to the screen while its bottom point is visible
-
+        distance = dwidth*3/4;
+        //draw top tube//initial points
+        for(int i=0;i<4;i++){
+            pointTop[i] = new Point();
+            pointBottom[i] = new Point();
+        }
+        for(int i= 0;i<4;i++) {
+            pointTop[i].x = dwidth +i*distance;
+            pointTop[i].y = -rnd.nextInt(topTubeThread.gettHeight());
+            //draw bottom tube
+            pointBottom[i].x = pointTop[i].x;
+            pointBottom[i].y = dHeight - GAP + pointTop[i].y;
+            do {
+                pointTop[i].y = -rnd.nextInt(topTubeThread.gettHeight());
+                pointBottom[i].y = dHeight - GAP + pointTop[i].y;
+            }
+            while (pointBottom[i].y < dHeight - bottomTubeThread.getbHeight());//make sure the bottom tube won't be drawn to the screen while its bottom point is visible
+        }
 
     }
     protected void drawAll(Canvas canvas){
@@ -86,10 +91,19 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
         velocity +=gravity;
         pointBird.y +=velocity;
         }
-        pointTop.x-=10;
-        pointBottom.x = pointTop.x;
-        canvas.drawBitmap(topTubeThread.getTopTube(),pointTop.x,pointTop.y,null);
-        canvas.drawBitmap(bottomTubeThread.getBottomTube(),pointBottom.x,pointBottom.y,null);
+        for(int i=0; i<4;i++){
+        pointTop[i].x-=10;
+        pointBottom[i].x = pointTop[i].x;
+        if(pointTop[i].x<-topTubeThread.gettWidth()){
+            pointTop[i].x += 4*distance;
+                do {
+                    pointBottom[i].y = dHeight - GAP + pointTop[i].y;
+                }
+                while (pointBottom[i].y < dHeight - bottomTubeThread.getbHeight());//make sure the bottom tube won't be drawn to the screen while its bottom point is visible
+        }
+        canvas.drawBitmap(topTubeThread.getTopTube(),pointTop[i].x,pointTop[i].y,null);
+        canvas.drawBitmap(bottomTubeThread.getBottomTube(),pointBottom[i].x,pointBottom[i].y,null);
+        }
         canvas.drawBitmap(birdThread.getBitmap(index),pointBird.x,pointBird.y,null);//bird
     }
     @Override

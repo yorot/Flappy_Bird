@@ -2,12 +2,12 @@ package com.example.flappybird;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.RectF;
+import android.graphics.Point;
 
 public class TopTube extends Thread {
     protected Bitmap topTube;
     protected MySurfaceView myView;
-    int tWidth,tHeight;
+    protected int tWidth,tHeight;
     public TopTube(MySurfaceView view){
         myView = view;
         topTube = BitmapFactory.decodeResource(myView.getResources(),R.drawable.toptube);
