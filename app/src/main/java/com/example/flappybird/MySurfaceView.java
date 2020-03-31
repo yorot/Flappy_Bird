@@ -25,17 +25,18 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
     TopTube topTubeThread;
     BottomTube bottomTubeThread;
     SurfaceHolder surfaceHolder;
-    Point pointBird;
-    Point[]pointTop = new Point[4];
+    Point pointBird;//point for bird
+    Point[]pointTop = new Point[4];//points for tubes
     Point[]pointBottom =new Point[4];
     Rect rect;
-    int index;
-    int velocity=0,gravity = 3,distance;
-    final int GAP = 400;
-    RectF birdRect;
-    Random rnd;
-    boolean game = true;
-    RectF[] topRect = new RectF[4],bottomRect = new RectF[4];
+    int index;//index for the bird bitmap
+    int velocity=0,gravity = 3,distance;//velocity- moving forward; gravity- gravity on the bird; distance - distance between tubes(top and bottom)
+    final int GAP = 400;//gap between the top and bottom tubes
+    RectF birdRect;//rect for collision
+    Random rnd;//random for the generation of the tubes position
+    boolean game = true;//game state
+    RectF[] topRect = new RectF[4],bottomRect = new RectF[4];//rect to detect collision
+    int[] numbers = {R.drawable.one};
     public MySurfaceView(Context context) {
         super(context);
         dwidth = Resources.getSystem().getDisplayMetrics().widthPixels;//getting the device height and width, make sure the game is working properly on every device
@@ -95,8 +96,8 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
                 velocity += gravity;
                 pointBird.y += velocity;
             }
-            for (int i = 0; i < 4; i++) {
-                if(birdRect.intersect(topRect[i])||birdRect.intersect(bottomRect[i]))
+            for (int i = 0; i < 4 && game; i++) {
+                if(birdRect.intersect(topRect[i])||birdRect.intersect(bottomRect[i]))//check bird hit on tubes
                     game = false;
                 pointTop[i].x -= 10;
                 pointBottom[i].x = pointTop[i].x;
