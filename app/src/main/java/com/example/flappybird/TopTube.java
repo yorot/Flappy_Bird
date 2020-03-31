@@ -1,8 +1,8 @@
+//בס"ד
 package com.example.flappybird;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
 
 public class TopTube extends Thread {
     protected Bitmap topTube;

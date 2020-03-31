@@ -1,3 +1,4 @@
+//בס"ד
 package com.example.flappybird;
 
 import android.graphics.Bitmap;

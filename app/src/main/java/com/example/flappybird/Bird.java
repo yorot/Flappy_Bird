@@ -3,8 +3,6 @@ package com.example.flappybird;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
-import android.graphics.RectF;
 
 public class Bird extends Thread {
     Bitmap[] images;

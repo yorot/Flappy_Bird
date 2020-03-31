@@ -32,12 +32,13 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
     int index;
     int velocity=0,gravity = 3,distance;
     final int GAP = 400;
-    RectF birdRect,topRect,bottomRect;
+    RectF birdRect;
     Random rnd;
-
+    boolean game = true;
+    RectF[] topRect = new RectF[4],bottomRect = new RectF[4];
     public MySurfaceView(Context context) {
         super(context);
-        dwidth = Resources.getSystem().getDisplayMetrics().widthPixels;//this way, bird will always be in the center of any device
+        dwidth = Resources.getSystem().getDisplayMetrics().widthPixels;//getting the device height and width, make sure the game is working properly on every device
         dHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
         birdThread = new Bird(this);
         background = BitmapFactory.decodeResource(getResources(),R.drawable.background);
@@ -51,7 +52,6 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
         surfaceHolder.addCallback(this);
         index = 0;
         rnd = new Random();
-        //pointBird.x = dwidth/2 - birdThread.getBwidth()/2;//Point represent the intial point for the bird, which is the middle
         pointBird.x = 0;
         pointBird.y = dHeight/2 - birdThread.getBheight()/2;
         rect= new Rect(0,0,dwidth,dHeight);
@@ -76,35 +76,48 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
                 pointBottom[i].y = dHeight - GAP + pointTop[i].y;
             }
             while (pointBottom[i].y < dHeight - bottomTubeThread.getbHeight());//make sure the bottom tube won't be drawn to the screen while its bottom point is visible
+            topRect[i] = new RectF(pointTop[i].x,pointTop[i].y,topTubeThread.tWidth+pointTop[i].x,topTubeThread.tHeight+pointTop[i].y);
+            bottomRect[i] = new RectF(pointBottom[i].x,pointBottom[i].y,bottomTubeThread.bWidth+pointBottom[i].x,bottomTubeThread.bHeight+pointBottom[i].y);
         }
+
 
     }
     protected void drawAll(Canvas canvas){
         canvas.drawBitmap(background,null,rect,null);//help
-        if(index == 0)//make the bird seems like it waving it wings
-            index = 1;
-        else if(index == 1)
-            index = 2;
-        else
-            index = 0;
-        if(pointBird.y<dHeight-birdThread.getBheight()||velocity < 0){
-        velocity +=gravity;
-        pointBird.y +=velocity;
-        }
-        for(int i=0; i<4;i++){
-        pointTop[i].x-=10;
-        pointBottom[i].x = pointTop[i].x;
-        if(pointTop[i].x<-topTubeThread.gettWidth()){
-            pointTop[i].x += 4*distance;
-                do {
-                    pointBottom[i].y = dHeight - GAP + pointTop[i].y;
+        if(game) {
+            if (index == 0)//make the bird seems like it waving it wings
+                index = 1;
+            else if (index == 1)
+                index = 2;
+            else
+                index = 0;
+            if (pointBird.y < dHeight - birdThread.getBheight() || velocity < 0) {
+                velocity += gravity;
+                pointBird.y += velocity;
+            }
+            for (int i = 0; i < 4; i++) {
+                if(birdRect.intersect(topRect[i])||birdRect.intersect(bottomRect[i]))
+                    game = false;
+                pointTop[i].x -= 10;
+                pointBottom[i].x = pointTop[i].x;
+                if (pointTop[i].x < -topTubeThread.gettWidth()) {
+                    pointTop[i].x += 4 * distance;
+                    do {
+                        pointBottom[i].y = dHeight - GAP + pointTop[i].y;
+                    }
+                    while (pointBottom[i].y < dHeight - bottomTubeThread.getbHeight());//make sure the bottom tube won't be drawn to the screen while its bottom point is visible
                 }
-                while (pointBottom[i].y < dHeight - bottomTubeThread.getbHeight());//make sure the bottom tube won't be drawn to the screen while its bottom point is visible
-        }
-        canvas.drawBitmap(topTubeThread.getTopTube(),pointTop[i].x,pointTop[i].y,null);
-        canvas.drawBitmap(bottomTubeThread.getBottomTube(),pointBottom[i].x,pointBottom[i].y,null);
+                canvas.drawBitmap(topTubeThread.getTopTube(), pointTop[i].x, pointTop[i].y, null);
+                canvas.drawBitmap(bottomTubeThread.getBottomTube(), pointBottom[i].x, pointBottom[i].y, null);
+                topRect[i].set(pointTop[i].x,pointTop[i].y,topTubeThread.tWidth+pointTop[i].x,topTubeThread.tHeight+pointTop[i].y);
+                bottomRect[i].set(pointBottom[i].x,pointBottom[i].y,bottomTubeThread.bWidth+pointBottom[i].x,bottomTubeThread.bHeight+pointBottom[i].y);
+            }
         }
         canvas.drawBitmap(birdThread.getBitmap(index),pointBird.x,pointBird.y,null);//bird
+        birdRect.set(pointBird.x,pointBird.y,birdThread.bwidth+pointBird.x,birdThread.bheight+pointBird.y);
+        if(pointBird.y>dHeight-birdThread.getBheight()||pointBird.y<0-birdThread.getBheight())//boundaries
+            game = false;
+
     }
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
@@ -137,6 +150,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
             velocity = -30;
             pointBird.x +=3;//move forward
         }
+
         return true;
     }
 
