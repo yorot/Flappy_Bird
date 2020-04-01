@@ -21,20 +21,19 @@
         app:layout_constraintVertical_bias="1.0">
 
         <ImageButton
-            android:id="@+id/imageButton"
+            android:id="@+id/playBtn"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@drawable/playbtn"
-            android:onClick="startGame"
-
-            tools:ignore="OnClick" />
+            android:onClick="onClick" />
 
         <ImageButton
-            android:id="@+id/imageButton2"
+            android:id="@+id/scoreBtn"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:onClick="onClick"
             android:background="@drawable/table" />
 
 
@@ -50,4 +49,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/text" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,25 +3,33 @@ package com.example.flappybird;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import java.util.Date;
 
-public class MainActivity extends AppCompatActivity   {
-   static boolean mute = false;//indicates if the user want sounds or not
+public class MainActivity extends AppCompatActivity implements View.OnClickListener  {
+   static boolean mute = false;//indicates if the user want sounds or noTextView myName;
+    Dialog d;
+    EditText name;
+    Button save;
+    SharedPreferences sp;
+    Date date = new Date(System.currentTimeMillis());
     @Override
 
     protected void onCreate(Bundle savedInstanceState)  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
     }
-    public void startGame(View v){
-        Intent intent = new Intent(this,Game.class);
-        startActivity(intent);
-        finish();
-    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu,menu);
@@ -43,5 +51,42 @@ public class MainActivity extends AppCompatActivity   {
 
         return true;
     }
+
+    @Override
+    public void onClick(View v) {
+        if(v.getId()==R.id.playBtn){//save name before the game starts
+            createDialog();
+        }
+        else if(v.getId()==R.id.scoreBtn){//display the score board
+            Intent intent = new Intent(this,scoreBoard.class);
+            startActivity(intent);
+            finish();
+        }
+        else{
+            sp = getSharedPreferences("scoreboard",MODE_PRIVATE);
+            //edit shared preferences file
+            SharedPreferences.Editor editor = sp.edit();
+            editor.putString("name",name.getText().toString());//save user name
+            editor.putLong("time", date.getTime()).apply();
+            editor.putInt("Score",0);
+            editor.commit();//save file
+            d.dismiss();//stop displaying the dialog
+            Intent intent = new Intent(this,Game.class);//start the game
+            startActivity(intent);
+            finish();
+        }
+    }
+    //method to create the dialog
+    public void createDialog(){
+        d= new Dialog(this);
+        d.setContentView(R.layout.dialog_template);
+        d.setTitle("Enter you name");
+        d.setCancelable(true);
+        name = d.findViewById(R.id.name);
+        save = d.findViewById(R.id.save);
+        save.setOnClickListener(this);
+        d.show();//display dialog
+    }
 }
+
 
