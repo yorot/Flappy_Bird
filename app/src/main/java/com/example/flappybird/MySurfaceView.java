@@ -50,9 +50,8 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
     int score = 0;
     int digit,ten,hund,thounds;
     SoundPool sp;
-    int wing,point;//wing and point sounds
-    Intent intent;
-    boolean mute= MainActivity.mute;
+    int wing,point,hit;//wing and point and hit sounds
+    boolean mute= MainActivity.mute;//flag to mute or either unmute the sounds
     public MySurfaceView(Context context) {
         super(context);
         dwidth = Resources.getSystem().getDisplayMetrics().widthPixels;//getting the device height and width, make sure the game is working properly on every device
@@ -119,8 +118,9 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
         }
         else
             sp = new SoundPool(10, AudioManager.STREAM_MUSIC,1);
-        wing = sp.load(getContext(),R.raw.wing,1);
-        point = sp.load(getContext(),R.raw.point,1);
+        wing = sp.load(getContext(),R.raw.wing,1);//wing sound
+        point = sp.load(getContext(),R.raw.point,1);//point sound
+        hit = sp.load(getContext(),R.raw.hit,1);//hit sound
     }
     protected void drawAll(Canvas canvas) {
         canvas.drawBitmap(background, null, rect, null);//help
@@ -136,8 +136,11 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
                 pointBird.y += velocity;
             }
             for (int i = 0; i < 4 && game; i++) {
-                if (birdRect.intersect(topRect[i]) || birdRect.intersect(bottomRect[i]))//check bird hit on tubes
+                if (birdRect.intersect(topRect[i]) || birdRect.intersect(bottomRect[i])) {//check bird hit on tubes
+                    if (!mute)
+                        sp.play(hit, 1, 1, 0, 0, 1);
                     game = false;
+                }
                 if(score>5){//make the tube go faster
                     pointTop[i].x-=15;
                 }
@@ -181,6 +184,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
                 canvas.drawBitmap(numbers[hund],hunds.x,hunds.y,null);
             if (pointBird.y > dHeight - birdThread.getBheight() || pointBird.y < 0 - birdThread.getBheight())//boundaries
                 game = false;
+            checkEnd();
         }
     }
     @Override
@@ -230,6 +234,15 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
     public void setHunds(){
         hunds.x = dwidth/2-numbers[0].getWidth()/2-80;
         hunds.y = digits.y;
+    }
+    //in - nothing
+    //deal with the ending of the game
+    public void checkEnd(){
+        if(!game){
+            Context display = getContext();
+            Intent intent = new Intent(display,gameEnd.class);
+            display.startActivity(intent);
+        }
     }
     private class MyThread extends Thread{
         MySurfaceView myView;

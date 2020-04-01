@@ -14,7 +14,7 @@ public class Game extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         View myView = new MySurfaceView(this);
-        getSupportActionBar().hide();
+        getSupportActionBar().hide();//hide upper action bar
         setContentView(myView);
     }
 }
