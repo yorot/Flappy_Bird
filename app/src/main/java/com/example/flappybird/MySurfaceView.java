@@ -1,8 +1,10 @@
 //בס"ד
 package com.example.flappybird;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ComponentInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -16,6 +18,7 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -48,6 +51,8 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
     int digit,ten,hund,thounds;
     SoundPool sp;
     int wing,point;//wing and point sounds
+    Intent intent;
+    boolean mute= MainActivity.mute;
     public MySurfaceView(Context context) {
         super(context);
         dwidth = Resources.getSystem().getDisplayMetrics().widthPixels;//getting the device height and width, make sure the game is working properly on every device
@@ -141,7 +146,8 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
                 pointBottom[i].x = pointTop[i].x;
                 if (pointTop[i].x < -topTubeThread.gettWidth()) {//bird passed the tube
                     score++;//update the score
-                    sp.play(point,1,1,0,0,1);//play point sound, indicating the player received another point
+                    if(!mute)//based on player preference in the home screen
+                        sp.play(point,1,1,0,0,1);//play point sound, indicating the player received another point
                     pointTop[i].x += 4 * distance;//update the x to a new x
                     do {
                         pointBottom[i].y = dHeight - GAP + pointTop[i].y;
@@ -207,7 +213,8 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
         if(event.getAction()==MotionEvent.ACTION_DOWN){
             velocity = -30;
             pointBird.x +=3;//move forward
-            sp.play(wing,1,1,0,0,1);//play wing sounds
+            if(!mute)//based on player preference
+                sp.play(wing,1,1,0,0,1);//play wing sounds
         }
 
         return true;
