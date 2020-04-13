@@ -62,13 +62,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             startActivity(intent);
             finish();
         }
-        else{
+        else{//start game
             sp = getSharedPreferences("scoreboard",MODE_PRIVATE);
             //edit shared preferences file
             SharedPreferences.Editor editor = sp.edit();
             editor.putString("name",name.getText().toString());//save user name
             editor.putLong("time", date.getTime()).apply();
-            editor.putInt("Score",0);
             editor.commit();//save file
             d.dismiss();//stop displaying the dialog
             Intent intent = new Intent(this,Game.class);//start the game

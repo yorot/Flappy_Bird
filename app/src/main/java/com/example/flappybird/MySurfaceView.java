@@ -27,7 +27,6 @@ import android.view.View;
 import java.util.Random;
 
 public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback, View.OnTouchListener {
-    timeReciver timeReciver = new timeReciver();
     int dwidth,dHeight;//device width and height
     MyThread myThread;
     Bitmap background;
@@ -48,8 +47,8 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
     boolean game = true;//game state
     RectF[] topRect = new RectF[4],bottomRect = new RectF[4];//rect to detect collision
     Bitmap[] numbers = new Bitmap[10];//bitmaps of the numbers photos
-    static  int score = 0;
-    int digit,ten,hund,thounds;
+    int score = 0;
+    int digit,ten,hund;
     SoundPool sp;
     int wing,point,hit;//wing and point and hit sounds
     boolean mute= MainActivity.mute;//flag to mute or either unmute the sounds
@@ -242,6 +241,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
         if(!game){
             Context display = getContext();
             Intent intent = new Intent(display,gameEnd.class);
+            intent.putExtra("Score",score);
             display.startActivity(intent);
         }
     }
