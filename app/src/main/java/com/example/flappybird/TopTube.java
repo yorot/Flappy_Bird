@@ -10,7 +10,7 @@ public class TopTube extends Thread {
     protected int tWidth,tHeight;
     public TopTube(MySurfaceView view){
         myView = view;
-        topTube = BitmapFactory.decodeResource(myView.getResources(),R.drawable.toptube);
+        topTube = BitmapFactory.decodeResource(myView.getResources(),R.drawable.toptube);//image
         tWidth = topTube.getWidth();
         tHeight = topTube.getHeight();
 

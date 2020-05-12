@@ -1,11 +1,7 @@
 //בס"ד
 package com.example.flappybird;
-
-import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ComponentInfo;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,13 +9,10 @@ import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
-
 import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -47,17 +40,18 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
     boolean game = true;//game state
     RectF[] topRect = new RectF[4],bottomRect = new RectF[4];//rect to detect collision
     Bitmap[] numbers = new Bitmap[10];//bitmaps of the numbers photos
-    int score = 0;
+    static int score = 0;
     int digit,ten,hund;
     SoundPool sp;
     int wing,point,hit;//wing and point and hit sounds
+    int noy;//noy sound effect
     boolean mute= MainActivity.mute;//flag to mute or either unmute the sounds
     public MySurfaceView(Context context) {
         super(context);
         dwidth = Resources.getSystem().getDisplayMetrics().widthPixels;//getting the device height and width, make sure the game is working properly on every device
         dHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
         birdThread = new Bird(this);
-        background = BitmapFactory.decodeResource(getResources(),R.drawable.background);
+        background = BitmapFactory.decodeResource(getResources(),MainActivity.backgroundSet());
         numbers[0] = BitmapFactory.decodeResource(getResources(),R.drawable.zero);
         numbers[1] = BitmapFactory.decodeResource(getResources(),R.drawable.one);
         numbers[2] = BitmapFactory.decodeResource(getResources(),R.drawable.two);
@@ -121,6 +115,7 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
         wing = sp.load(getContext(),R.raw.wing,1);//wing sound
         point = sp.load(getContext(),R.raw.point,1);//point sound
         hit = sp.load(getContext(),R.raw.hit,1);//hit sound
+        noy = sp.load(getContext(),R.raw.noy,1);
     }
     protected void drawAll(Canvas canvas) {
         canvas.drawBitmap(background, null, rect, null);//help
@@ -156,6 +151,8 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
                         pointBottom[i].y = dHeight - GAP + pointTop[i].y;
                     }
                     while (pointBottom[i].y < dHeight - bottomTubeThread.getbHeight());//make sure the bottom tube won't be drawn to the screen while its bottom point is visible
+                    if(score==66)
+                        sp.play(noy,1,1,0,0,1);//noyyy
                 }
 
                 canvas.drawBitmap(topTubeThread.getTopTube(), pointTop[i].x, pointTop[i].y, null);
@@ -226,13 +223,13 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
     //in-nothing
     //sets the score display to tens
     public void setTens(){
-        tens.x = dwidth/2-numbers[0].getWidth()/2-40;
+        tens.x = dwidth/2-numbers[0].getWidth()/2-50;
         tens.y = digits.y;
     }
     //in-nothing
     //sets the score display to hunds
     public void setHunds(){
-        hunds.x = dwidth/2-numbers[0].getWidth()/2-80;
+        hunds.x = dwidth/2-numbers[0].getWidth()/2-90;
         hunds.y = digits.y;
     }
     //in - nothing
@@ -241,7 +238,6 @@ public class MySurfaceView extends SurfaceView implements SurfaceHolder.Callback
         if(!game){
             Context display = getContext();
             Intent intent = new Intent(display,gameEnd.class);
-            intent.putExtra("Score",score);
             display.startActivity(intent);
         }
     }
